@@ -1,2 +1,5 @@
 server:
   serviceapi: 0.0.0.0:10000
+mongodb:
+        url: "127.0.0.1:27017"
+        database: "notifications-server"

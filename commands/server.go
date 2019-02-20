@@ -28,12 +28,13 @@ var ServerCommands = []cli.Command{
 }
 
 func cmdStart(c *cli.Context) error {
-
 	if err := cfg.MustRead(c); err != nil {
 		return err
 	}
 
-	endpoint.Serve()
+	mongodb := LoadMongoService()
+
+	endpoint.Serve(mongodb)
 
 	return nil
 }

@@ -9,6 +9,10 @@ type Config struct {
 	Server struct {
 		ServiceApi string
 	}
+	Mongodb struct {
+		Url      string
+		Database string
+	}
 }
 
 var C Config

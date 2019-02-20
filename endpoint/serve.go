@@ -8,11 +8,14 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/iden3/notifications-server/config"
+	"github.com/iden3/notifications-server/db"
 
 	"github.com/gin-gonic/gin"
 
 	log "github.com/sirupsen/logrus"
 )
+
+var mongodb db.Mongodb
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
@@ -40,7 +43,7 @@ func serveServiceApi() *http.Server {
 	return serviceapisrv
 }
 
-func Serve() {
+func Serve(mgodb *db.Mongodb) {
 
 	stopch := make(chan interface{})
 
@@ -55,6 +58,7 @@ func Serve() {
 		}
 	}()
 
+	mongodb = *mgodb
 	// start servers
 	serviceapisrv := serveServiceApi()
 
