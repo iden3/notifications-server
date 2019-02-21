@@ -18,6 +18,7 @@ idaddr1 = "0xd9d6800a1b20ceebef5420f878bbd915f8b4ed85"
 r = requests.post(URL + "/notifications/" + idaddr0, json={"data": "notif00"})
 t.rStatus("post notification to " + idaddr0, r)
 
+#  i = 0
 for i in range(10):
     notificationData = "notif" + str(i)
     r = requests.post(URL + "/notifications/" + idaddr0, json={"data": notificationData})
@@ -25,11 +26,20 @@ for i in range(10):
 
 r = requests.post(URL + "/notifications", json={"idAddr": idaddr0})
 t.rStatus("get notifications for " + idaddr0, r)
+
+r = requests.post(URL + "/notifications?beforeid=1", json={"idAddr": idaddr0})
+t.rStatus("get notifications for " + idaddr0, r)
 jsonR = r.json()
+t.equal("expect no notifications for idaddr0 before=1", jsonR["notifications"], None)
+
+r = requests.post(URL + "/notifications", json={"idAddr": idaddr0})
+allnotif = r.json()
+r = requests.post(URL + "/notifications?afterid=1", json={"idAddr": idaddr0})
+notifafter1 = r.json()
+t.equal("expect no notifications for idaddr0 after=1 equal to all notifications", allnotif["notifications"], notifafter1["notifications"])
 
 r = requests.delete(URL + "/notifications", json={"idAddr": idaddr0})
 t.rStatus("delete notifications for " + idaddr0, r)
-jsonR = r.json()
 
 r = requests.post(URL + "/notifications", json={"idAddr": idaddr0})
 t.rStatus("get notifications for " + idaddr0, r)
