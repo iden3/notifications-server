@@ -9,7 +9,7 @@ import (
 )
 
 func LoadMongoService() *db.Mongodb {
-	collectionsArray := []string{"notifications"}
+	collectionsArray := []string{"notifications", "counters"}
 	mongoservice, err := db.NewMongodb(config.C.Mongodb.Url, config.C.Mongodb.Database, collectionsArray)
 	if err != nil {
 		fmt.Println("Cannot open mongodb storage")

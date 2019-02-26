@@ -19,7 +19,7 @@ r = requests.post(URL + "/notifications/" + idaddr0, json={"data": "notif00"})
 t.rStatus("post notification to " + idaddr0, r)
 
 #  i = 0
-for i in range(10):
+for i in range(18):
     notificationData = "notif" + str(i)
     r = requests.post(URL + "/notifications/" + idaddr0, json={"data": notificationData})
     r = requests.post(URL + "/notifications/" + idaddr1, json={"data": notificationData})

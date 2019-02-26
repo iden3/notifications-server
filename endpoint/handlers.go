@@ -17,6 +17,7 @@ type NotificationMsg struct {
 }
 
 type Notification struct {
+	Id     uint64 `json:"id"`
 	Date   int64  `json:"date"`
 	Data   string `json:"data"`
 	ToAddr string `json:"toAddr"`
@@ -28,14 +29,15 @@ func handlePostNotification(c *gin.Context) {
 
 	idAddr := c.Param("idaddr")
 
-	notification := Notification{
-		Date:   time.Now().Unix(),
-		Data:   notificationMsg.Data,
-		ToAddr: idAddr,
-	}
-
-	err := mongodb.GetCollections()["notifications"].Insert(notification)
-	if err != nil {
+	if err := counter.incCounter(idAddr, func(n uint64) error {
+		notification := Notification{
+			Id:     n,
+			Date:   time.Now().Unix(),
+			Data:   notificationMsg.Data,
+			ToAddr: idAddr,
+		}
+		return mongodb.GetCollections()["notifications"].Insert(notification)
+	}); err != nil {
 		fail(c, "error on handleGetNotifications", err)
 		return
 	}
@@ -68,11 +70,11 @@ func handleGetNotifications(c *gin.Context) {
 	var notifications []Notification
 	err = mongodb.GetCollections()["notifications"].Find(bson.M{
 		"toaddr": m.IdAddr,
-		"date": bson.M{
+		"id": bson.M{
 			"$gt": afterid,
 			"$lt": beforeid,
 		},
-	}).Sort("-$natural").All(&notifications)
+	}).Sort("-id").Limit(10).All(&notifications)
 	if err != nil {
 		fail(c, "error on handleGetNotifications", err)
 		return
@@ -102,9 +104,9 @@ func handleDeleteNotifications(c *gin.Context) {
 
 	info, err := mongodb.GetCollections()["notifications"].RemoveAll(bson.M{
 		"toaddr": m.IdAddr,
-		"date": bson.M{
-			"$gt": afterid,
-			"$lt": beforeid,
+		"id": bson.M{
+			"$gte": afterid,
+			"$lte": beforeid,
 		},
 	})
 	if err != nil {

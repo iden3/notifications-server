@@ -16,6 +16,7 @@ import (
 )
 
 var mongodb db.Mongodb
+var counter *Counter
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
@@ -59,6 +60,7 @@ func Serve(mgodb *db.Mongodb) {
 	}()
 
 	mongodb = *mgodb
+	counter = NewCounter(mongodb.GetCollections()["counters"])
 	// start servers
 	serviceapisrv := serveServiceApi()
 
