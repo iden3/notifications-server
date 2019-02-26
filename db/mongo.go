@@ -1,6 +1,6 @@
 package db
 
-import mgo "gopkg.in/mgo.v2"
+import "github.com/globalsign/mgo"
 
 type Mongodb struct {
 	collections map[string]*mgo.Collection
