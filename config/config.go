@@ -8,6 +8,7 @@ import (
 type Config struct {
 	Server struct {
 		ServiceApi string
+		Domain     string
 	}
 	Mongodb struct {
 		Url      string

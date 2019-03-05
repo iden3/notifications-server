@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
+
+	"github.com/iden3/go-iden3/middleware/iden-assert-auth"
 )
 
 func handleGetInfo(c *gin.Context) {
@@ -44,17 +46,8 @@ func handlePostNotification(c *gin.Context) {
 	c.JSON(200, gin.H{})
 }
 
-type GetNotificationMsg struct {
-	IdAddr string `json:"idAddr"`
-	// SignedPacket string `json:"signedPacket"`
-	// ProofKSign ProofClaim `json:"proofKSign"`
-}
-
 func handleGetNotifications(c *gin.Context) {
-	var m GetNotificationMsg
-	c.BindJSON(&m)
-
-	// TODO check signature of requester id
+	user := auth.GetUser(c)
 
 	afterid, err := strconv.ParseInt(c.DefaultQuery("afterid", "0"), 10, 64)
 	if err != nil {
@@ -69,7 +62,7 @@ func handleGetNotifications(c *gin.Context) {
 
 	var notifications []Notification
 	err = mongodb.GetCollections()["notifications"].Find(bson.M{
-		"toaddr": m.IdAddr,
+		"toaddr": user.IdAddr,
 		"id": bson.M{
 			"$gt": afterid,
 			"$lt": beforeid,
@@ -86,10 +79,7 @@ func handleGetNotifications(c *gin.Context) {
 }
 
 func handleDeleteNotifications(c *gin.Context) {
-	var m GetNotificationMsg
-	c.BindJSON(&m)
-
-	// TODO check signature of requester id
+	user := auth.GetUser(c)
 
 	afterid, err := strconv.Atoi(c.DefaultQuery("afterid", "0"))
 	if err != nil {
@@ -103,7 +93,7 @@ func handleDeleteNotifications(c *gin.Context) {
 	}
 
 	info, err := mongodb.GetCollections()["notifications"].RemoveAll(bson.M{
-		"toaddr": m.IdAddr,
+		"toaddr": user.IdAddr,
 		"id": bson.M{
 			"$gte": afterid,
 			"$lte": beforeid,

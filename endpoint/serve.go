@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"context"
+	"crypto/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,10 +14,14 @@ import (
 	"github.com/gin-gonic/gin"
 
 	log "github.com/sirupsen/logrus"
+
+	"github.com/iden3/go-iden3/core"
+	"github.com/iden3/go-iden3/middleware/iden-assert-auth"
 )
 
 var mongodb db.Mongodb
 var counter *Counter
+var nonceDb *core.NonceDb
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
@@ -30,9 +35,18 @@ func serveServiceApi() *http.Server {
 	serviceapi := api.Group("/api/unstable")
 	serviceapi.GET("/", handleGetInfo)
 
+	var key [256 / 8]byte
+	if _, err := rand.Read(key[:]); err != nil {
+		panic(err)
+	}
+	authapi, err := auth.AddAuthMiddleware(serviceapi, config.C.Server.Domain, nonceDb, key[:])
+	if err != nil {
+		panic(err)
+	}
+
 	serviceapi.POST("/notifications/:idaddr", handlePostNotification)
-	serviceapi.POST("/notifications", handleGetNotifications)
-	serviceapi.DELETE("/notifications", handleDeleteNotifications)
+	authapi.GET("/notifications", handleGetNotifications)
+	authapi.DELETE("/notifications", handleDeleteNotifications)
 
 	serviceapisrv := &http.Server{Addr: config.C.Server.ServiceApi, Handler: api}
 	go func() {
@@ -61,6 +75,7 @@ func Serve(mgodb *db.Mongodb) {
 
 	mongodb = *mgodb
 	counter = NewCounter(mongodb.GetCollections()["counters"])
+	nonceDb = core.NewNonceDb()
 	// start servers
 	serviceapisrv := serveServiceApi()
 
