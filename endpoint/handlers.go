@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 
+	common3 "github.com/iden3/go-iden3/common"
 	"github.com/iden3/go-iden3/middleware/iden-assert-auth"
 )
 
@@ -40,7 +41,7 @@ func handlePostNotification(c *gin.Context) {
 		}
 		return mongodb.GetCollections()["notifications"].Insert(notification)
 	}); err != nil {
-		fail(c, "error on handleGetNotifications", err)
+		fail(c, "error on handlePostNotifications", err)
 		return
 	}
 	c.JSON(200, gin.H{})
@@ -62,7 +63,7 @@ func handleGetNotifications(c *gin.Context) {
 
 	var notifications []Notification
 	err = mongodb.GetCollections()["notifications"].Find(bson.M{
-		"toaddr": user.IdAddr,
+		"toaddr": common3.HexEncode(user.IdAddr[:]),
 		"id": bson.M{
 			"$gt": afterid,
 			"$lt": beforeid,
@@ -93,7 +94,7 @@ func handleDeleteNotifications(c *gin.Context) {
 	}
 
 	info, err := mongodb.GetCollections()["notifications"].RemoveAll(bson.M{
-		"toaddr": user.IdAddr,
+		"toaddr": common3.HexEncode(user.IdAddr[:]),
 		"id": bson.M{
 			"$gte": afterid,
 			"$lte": beforeid,
