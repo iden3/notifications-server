@@ -30,7 +30,11 @@ func init() {
 func serveServiceApi() *http.Server {
 	// start serviceapi
 	api := gin.Default()
-	api.Use(cors.Default())
+
+	corsCfg := cors.DefaultConfig()
+	corsCfg.AllowHeaders = append(corsCfg.AllowHeaders, "Authorization")
+	corsCfg.AllowAllOrigins = true
+	api.Use(cors.New(corsCfg))
 
 	serviceapi := api.Group("/api/unstable")
 	serviceapi.GET("/", handleGetInfo)
