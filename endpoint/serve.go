@@ -17,17 +17,20 @@ import (
 
 	"github.com/iden3/go-iden3/core"
 	"github.com/iden3/go-iden3/middleware/iden-assert-auth"
+	"github.com/iden3/go-iden3/services/discoverysrv"
+	"github.com/iden3/go-iden3/services/nameresolversrv"
+	"github.com/iden3/go-iden3/services/signedpacketsrv"
 )
 
 var mongodb db.Mongodb
 var counter *Counter
-var nonceDb *core.NonceDb
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-func serveServiceApi() *http.Server {
+func serveServiceApi(nonceDb *core.NonceDb,
+	signedPacketService *signedpacketsrv.Service) *http.Server {
 	// start serviceapi
 	api := gin.Default()
 
@@ -43,7 +46,8 @@ func serveServiceApi() *http.Server {
 	if _, err := rand.Read(key[:]); err != nil {
 		panic(err)
 	}
-	authapi, err := auth.AddAuthMiddleware(serviceapi, config.C.Server.Domain, nonceDb, key[:])
+	authapi, err := auth.AddAuthMiddleware(serviceapi, config.C.Server.Domain, nonceDb,
+		key[:], signedPacketService)
 	if err != nil {
 		panic(err)
 	}
@@ -79,9 +83,19 @@ func Serve(mgodb *db.Mongodb) {
 
 	mongodb = *mgodb
 	counter = NewCounter(mongodb.GetCollections()["counters"])
-	nonceDb = core.NewNonceDb()
+	nonceDb := core.NewNonceDb()
+	nameResolveService, err := nameresolversrv.New(config.C.Names.Path)
+	if err != nil {
+		panic(err)
+	}
+	discoveryService, err := discoverysrv.New(config.C.Entitites.Path)
+	if err != nil {
+		panic(err)
+	}
+	signedPacketService := signedpacketsrv.New(discoveryService, nameResolveService)
+
 	// start servers
-	serviceapisrv := serveServiceApi()
+	serviceapisrv := serveServiceApi(nonceDb, signedPacketService)
 
 	// wait until shutdown signal
 	<-stopch

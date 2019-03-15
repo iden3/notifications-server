@@ -14,6 +14,12 @@ type Config struct {
 		Url      string
 		Database string
 	}
+	Names struct {
+		Path string
+	}
+	Entitites struct {
+		Path string
+	}
 }
 
 var C Config
