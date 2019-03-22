@@ -5,11 +5,11 @@ require (
 	github.com/gin-contrib/cors v0.0.0-20190226021855-50921afdc5c1
 	github.com/gin-gonic/gin v1.3.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
-	github.com/iden3/go-iden3 v0.0.3-0.20190305142814-85a67366eb52
+	github.com/iden3/go-iden3 v0.0.3-0.20190318101153-d73c8e8ca624
 	github.com/sirupsen/logrus v1.3.0
 	github.com/spf13/viper v1.3.1
 	github.com/stretchr/testify v1.3.0
 	github.com/urfave/cli v1.20.0
 )
 
-replace github.com/iden3/go-iden3 => ../go-iden3
+// replace github.com/iden3/go-iden3 => ../go-iden3
