@@ -33,7 +33,7 @@ func TestCounter(t *testing.T) {
 	counter := NewCounter(mongodb.GetCollections()["counters"])
 
 	for i := 0; i < 3; i++ {
-		err = counter.incCounter("id5", func(n uint64) error {
+		err = counter.incCounter([]byte("id5"), func(n uint64) error {
 			fmt.Println(n)
 			return nil
 		})

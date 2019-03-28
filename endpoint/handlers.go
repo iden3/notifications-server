@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 
-	common3 "github.com/iden3/go-iden3/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/iden3/go-iden3/middleware/iden-assert-auth"
 )
 
@@ -20,24 +20,32 @@ type NotificationMsg struct {
 }
 
 type Notification struct {
-	Id     uint64 `json:"id"`
-	Date   int64  `json:"date"`
-	Data   string `json:"data"`
-	ToAddr string `json:"toAddr"`
+	Id       uint64         `json:"id"`
+	Date     int64          `json:"date"`
+	Data     string         `json:"data"`
+	ToAddr   common.Address `json:"toAddr"`
+	FromAddr common.Address `json:"fromAddr"`
 }
 
 func handlePostNotification(c *gin.Context) {
+	user := auth.GetUser(c)
+
 	var notificationMsg NotificationMsg
 	c.BindJSON(&notificationMsg)
 
-	idAddr := c.Param("idaddr")
+	var idAddr common.Address
+	if err := idAddr.UnmarshalText([]byte(c.Param("idaddr"))); err != nil {
+		fail(c, "bad idaddr", err)
+		return
+	}
 
-	if err := counter.incCounter(idAddr, func(n uint64) error {
+	if err := counter.incCounter(idAddr[:], func(n uint64) error {
 		notification := Notification{
-			Id:     n,
-			Date:   time.Now().Unix(),
-			Data:   notificationMsg.Data,
-			ToAddr: idAddr,
+			Id:       n,
+			Date:     time.Now().Unix(),
+			Data:     notificationMsg.Data,
+			ToAddr:   idAddr,
+			FromAddr: user.IdAddr,
 		}
 		return mongodb.GetCollections()["notifications"].Insert(notification)
 	}); err != nil {
@@ -63,7 +71,7 @@ func handleGetNotifications(c *gin.Context) {
 
 	var notifications []Notification
 	err = mongodb.GetCollections()["notifications"].Find(bson.M{
-		"toaddr": common3.HexEncode(user.IdAddr[:]),
+		"toaddr": user.IdAddr,
 		"id": bson.M{
 			"$gt": afterid,
 			"$lt": beforeid,
@@ -94,7 +102,7 @@ func handleDeleteNotifications(c *gin.Context) {
 	}
 
 	info, err := mongodb.GetCollections()["notifications"].RemoveAll(bson.M{
-		"toaddr": common3.HexEncode(user.IdAddr[:]),
+		"toaddr": user.IdAddr,
 		"id": bson.M{
 			"$gte": afterid,
 			"$lte": beforeid,

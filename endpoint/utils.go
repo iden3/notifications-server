@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
+	common3 "github.com/iden3/go-iden3/common"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,13 +19,14 @@ func NewCounter(collection *mgo.Collection) *Counter {
 	return &Counter{collection: collection}
 }
 
-func (c *Counter) incCounter(key string, f func(n uint64) error) error {
+func (c *Counter) incCounter(key []byte, f func(n uint64) error) error {
+	keyHex := common3.HexEncode(key)
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	var n struct{ N uint64 }
-	if err := c.collection.FindId(key).One(&n); err != nil {
+	if err := c.collection.FindId(keyHex).One(&n); err != nil {
 		if err.Error() == "not found" {
-			if err := c.collection.Insert(bson.M{"_id": key, "n": 0}); err != nil {
+			if err := c.collection.Insert(bson.M{"_id": keyHex, "n": 0}); err != nil {
 				return err
 			}
 		} else {
@@ -32,7 +34,7 @@ func (c *Counter) incCounter(key string, f func(n uint64) error) error {
 		}
 	}
 	n.N++
-	if err := c.collection.UpdateId(key, bson.M{"n": n.N}); err != nil {
+	if err := c.collection.UpdateId(keyHex, bson.M{"n": n.N}); err != nil {
 		return err
 	}
 
