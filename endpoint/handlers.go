@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 
@@ -16,15 +17,17 @@ func handleGetInfo(c *gin.Context) {
 }
 
 type NotificationMsg struct {
-	Data string `json:"data"`
+	Data json.RawMessage `json:"data" binding:"required"`
+	Type string          `json:"type" binding:"required"`
 }
 
 type Notification struct {
-	Id       uint64         `json:"id"`
-	Date     int64          `json:"date"`
-	Data     string         `json:"data"`
-	ToAddr   common.Address `json:"toAddr"`
-	FromAddr common.Address `json:"fromAddr"`
+	Id       uint64          `json:"id"`
+	Date     int64           `json:"date"`
+	Type     string          `json:"type"`
+	Data     json.RawMessage `json:"data"`
+	ToAddr   common.Address  `json:"toAddr"`
+	FromAddr common.Address  `json:"fromAddr"`
 }
 
 func handlePostNotification(c *gin.Context) {
@@ -43,6 +46,7 @@ func handlePostNotification(c *gin.Context) {
 		notification := Notification{
 			Id:       n,
 			Date:     time.Now().Unix(),
+			Type:     notificationMsg.Type,
 			Data:     notificationMsg.Data,
 			ToAddr:   idAddr,
 			FromAddr: user.IdAddr,
