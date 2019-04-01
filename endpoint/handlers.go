@@ -1,7 +1,6 @@
 package endpoint
 
 import (
-	"encoding/json"
 	"strconv"
 	"time"
 
@@ -17,22 +16,17 @@ func handleGetInfo(c *gin.Context) {
 }
 
 type NotificationMsg struct {
-	Data json.RawMessage `json:"data" binding:"required"`
-	Type string          `json:"type" binding:"required"`
+	Jws string `json:"jws" binding:"required"`
 }
 
 type Notification struct {
-	Id       uint64          `json:"id"`
-	Date     int64           `json:"date"`
-	Type     string          `json:"type"`
-	Data     json.RawMessage `json:"data"`
-	ToAddr   common.Address  `json:"toAddr"`
-	FromAddr common.Address  `json:"fromAddr"`
+	Id     uint64         `json:"id"`
+	Date   int64          `json:"date"`
+	Jws    string         `json:"jws"`
+	ToAddr common.Address `json:"toAddr"`
 }
 
 func handlePostNotification(c *gin.Context) {
-	user := auth.GetUser(c)
-
 	var notificationMsg NotificationMsg
 	c.BindJSON(&notificationMsg)
 
@@ -44,12 +38,10 @@ func handlePostNotification(c *gin.Context) {
 
 	if err := counter.incCounter(idAddr[:], func(n uint64) error {
 		notification := Notification{
-			Id:       n,
-			Date:     time.Now().Unix(),
-			Type:     notificationMsg.Type,
-			Data:     notificationMsg.Data,
-			ToAddr:   idAddr,
-			FromAddr: user.IdAddr,
+			Id:     n,
+			Date:   time.Now().Unix(),
+			Jws:    notificationMsg.Jws,
+			ToAddr: idAddr,
 		}
 		return mongodb.GetCollections()["notifications"].Insert(notification)
 	}); err != nil {
