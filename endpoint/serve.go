@@ -31,7 +31,7 @@ func init() {
 }
 
 func serveServiceApi(nonceDb *core.NonceDb,
-	signedPacketService *signedpacketsrv.Service) *http.Server {
+	signedPacketVerifier *signedpacketsrv.SignedPacketVerifier) *http.Server {
 	// start serviceapi
 	api := gin.Default()
 
@@ -48,7 +48,7 @@ func serveServiceApi(nonceDb *core.NonceDb,
 		panic(err)
 	}
 	authapi, err := auth.AddAuthMiddleware(serviceapi, config.C.Server.Domain, nonceDb,
-		key[:], signedPacketService)
+		key[:], signedPacketVerifier)
 	if err != nil {
 		panic(err)
 	}
@@ -93,10 +93,11 @@ func Serve(mgodb *db.Mongodb) {
 	if err != nil {
 		panic(err)
 	}
-	signedPacketService := signedpacketsrv.New(discoveryService, nameResolveService)
+	signedPacketVerifier := signedpacketsrv.NewSignedPacketVerifier(discoveryService,
+		nameResolveService)
 
 	// start servers
-	serviceapisrv := serveServiceApi(nonceDb, signedPacketService)
+	serviceapisrv := serveServiceApi(nonceDb, signedPacketVerifier)
 
 	// wait until shutdown signal
 	<-stopch
