@@ -4,3 +4,7 @@ server:
 mongodb:
         url: "127.0.0.1:27017"
         database: "notifications-server"
+names:
+  path: /tmp/names.json
+entitites:
+  path: /tmp/entitites.json

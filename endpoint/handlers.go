@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/iden3/go-iden3/middleware/iden-assert-auth"
+	"github.com/iden3/go-iden3/core"
+	auth "github.com/iden3/go-iden3/middleware/iden-assert-auth"
 )
 
 func handleGetInfo(c *gin.Context) {
@@ -20,18 +20,18 @@ type NotificationMsg struct {
 }
 
 type Notification struct {
-	Id     uint64         `json:"id"`
-	Date   int64          `json:"date"`
-	Jws    string         `json:"jws"`
-	ToAddr common.Address `json:"toAddr"`
+	Id     uint64  `json:"id"`
+	Date   int64   `json:"date"`
+	Jws    string  `json:"jws"`
+	ToAddr core.ID `json:"toAddr"`
 }
 
 func handlePostNotification(c *gin.Context) {
 	var notificationMsg NotificationMsg
 	c.BindJSON(&notificationMsg)
 
-	var idAddr common.Address
-	if err := idAddr.UnmarshalText([]byte(c.Param("idaddr"))); err != nil {
+	idAddr, err := core.IDFromString(c.Param("idaddr"))
+	if err != nil {
 		fail(c, "bad idaddr", err)
 		return
 	}
