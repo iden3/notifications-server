@@ -53,7 +53,7 @@ func serveServiceApi(nonceDb *core.NonceDb,
 		panic(err)
 	}
 
-	serviceapi.POST("/notifications/:idaddr", handlePostNotification)
+	serviceapi.POST("/notifications/:id", handlePostNotification)
 	authapi.GET("/notifications", handleGetNotifications)
 	authapi.DELETE("/notifications", handleDeleteNotifications)
 
