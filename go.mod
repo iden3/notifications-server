@@ -9,7 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.3.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/iden3/go-iden3 v0.0.5-0.20190520094747-6f3c7f0a26a7
+	github.com/iden3/go-iden3 v0.0.5-0.20190531140253-8166dff56c78
 	github.com/json-iterator/go v1.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/sirupsen/logrus v1.4.1

@@ -54,6 +54,7 @@ github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 h1:DujepqpGd1hyOd7a
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-stack/stack v1.8.0 h1:5SgMzNM5HxrEjV0ww2lTmX6E2Izsfxas4+YHWRs3Lsk=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
+github.com/gofrs/flock v0.7.1/go.mod h1:F1TvTiK9OcQqauNUHlbJvyl9Qa1QvF/gOUDKA14jxHU=
 github.com/gogo/protobuf v1.2.1 h1:/s5zKNz0uPFCZ5hddgPdo2TK2TVrUNMn0OOX8/aZMTE=
 github.com/gogo/protobuf v1.2.1/go.mod h1:hp+jE20tsWTFYpLwKvXlhS1hjn+gTNwPg2I6zVXpSg4=
 github.com/golang/protobuf v0.0.0-20170307001533-c9c7427a2a70/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
@@ -78,6 +79,8 @@ github.com/iden3/go-iden3 v0.0.5-0.20190517144710-9daaad0fdb96 h1:MpoYDfDkA07ikL
 github.com/iden3/go-iden3 v0.0.5-0.20190517144710-9daaad0fdb96/go.mod h1:IYgj5a7ALh/Ppf7LCJppb/45w6s7OvLPqL/E07XRA94=
 github.com/iden3/go-iden3 v0.0.5-0.20190520094747-6f3c7f0a26a7 h1:MVrQcfHf2pJXtD/d1REbf2Cqpe1JkmK+InL5TJZqmDY=
 github.com/iden3/go-iden3 v0.0.5-0.20190520094747-6f3c7f0a26a7/go.mod h1:IYgj5a7ALh/Ppf7LCJppb/45w6s7OvLPqL/E07XRA94=
+github.com/iden3/go-iden3 v0.0.5-0.20190531140253-8166dff56c78 h1:+/vX6DamEZZ6OzQE5SvT34OubDlwBhcx79ppNVFvmTo=
+github.com/iden3/go-iden3 v0.0.5-0.20190531140253-8166dff56c78/go.mod h1:I4eiY0M0u+/9zx5k48DQ/u1ZQ1CeLoU4LGfZHt0EHFI=
 github.com/ipfs/go-ipfs-api v0.0.0-20190227013953-fc4b441cfe34 h1:iBNNFRMAM7TdtXj7jX9DfhdzjdZEBVG/xJb4AkEkZko=
 github.com/ipfs/go-ipfs-api v0.0.0-20190227013953-fc4b441cfe34/go.mod h1:YWGjU+7Bdls1CpvsKsV6EsQ/KMyQqSpBru2hme/5WQg=
 github.com/ipfs/go-ipfs-files v0.0.0-20190211184658-b9ab59872849 h1:zDVjiCC1yxVL0rtwzLY45QfbNY5j9uS5G7m+4VLDfco=
